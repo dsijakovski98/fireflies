@@ -2,7 +2,7 @@ class Population {
 
   constructor() {
     this.fireflies = [];
-    this.size = defaultPopulationSize;
+    this.size = populationSize;
     for (var i = 0; i < this.size; i++) {
       this.fireflies[i] = new Firefly();
     }

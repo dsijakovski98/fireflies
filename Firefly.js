@@ -36,20 +36,23 @@ class Firefly {
       this.crashed = true;
     }
     
-    if(this.pos.x > (target.x-(target.s/2)) &&
-       this.pos.x < (target.x+(target.s/2)) ){
-    if(this.pos.y > (target.y-(target.s/2)) &&
-       this.pos.y < (target.y+(target.s/2)) ){
+    if(this.pos.x > (target.x-(target.s/2)) && this.pos.x < (target.x+(target.s/2)) ) {
+    if(this.pos.y > (target.y-(target.s/2)) && this.pos.y < (target.y+(target.s/2)) ){
       if(!this.arrived) arrived++;
       this.arrived = true;
     }
+  }
+  else {
+    if(this.arrived) arrived--;
+    this.arrived = false;
   }
     
 
     if (this.timer >= life) {
       nextGen = true;
       this.timer = 0;
-    } else {
+    } 
+    else {
       this.acc.add(this.dna.genes[this.timer]);
       this.timer++;
       this.acc.limit(0.4);

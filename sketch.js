@@ -3,25 +3,46 @@ let population;
 let backgroundIMG;
 let obstacles = [];
 let newObs = null;
-
 let generation = 1;
-let defaultMutationRate = 0.08;
-let defaultPanicThreshold = 3;
 let arrived = 0;
-let panicMode = 0;
-let panicThreshold = 3;
 let nextGen = false;
+let newGen = false;
+let repositionTarget = false;
+
+
+// Default setup
+let defaultMutationRate = 0.05;
+let defaultPopulationSize = 200;
+let defaultLifespan = 250;
+let defaultArriveBonus = 100;
+let defaultCrashDamage = 100;
 
 // Sliders data
-let life = 250;
-let defaultPopulationSize = 200;
-let mutationRate = defaultMutationRate;
+let mutationRate;
+let populationSize;
+let life;
+let arriveBonus;
+let crashDamage;
 let obstacleLifeBonus = 20;
-let crashDamage = 100;
-let arriveBonus = 100;
 
+// Slider objects
+let mutationRateSlider;
+let populationSizeSlider;
+let lifespanSlider;
+let arriveSlider;
+let crashSlider;
+
+// Span values
+let mutationRateValue;
+let populationSizeValue;
+let lifespanValue;
+let arriveValue;
+let crashValue;
+
+// Text
 const title = 'FIREFLIES';
 const instructions = 'Click/Touch and drag to create\nobstacles for the Fireflies :)';
+const creator = "dsijakovski98";
 
 function preload() {
   backgroundIMG = loadImage('pozadina.png');
@@ -29,11 +50,15 @@ function preload() {
 
 
 function setup() {
-  createCanvas(900, 600);
+  createCanvas(900, 595);
+  if(!newGen) {
+    createSliders();
+    addSlidersEventListeners();
+  }
+
   population = new Population();
   target = new Target();
-
-  createSliders();
+  newGen = false;
 }
 
 function draw() {
@@ -42,12 +67,12 @@ function draw() {
   
   target.show();
 
-  for (var o of obstacles) {
-    o.show();
+  for (var obstacle of obstacles) {
+    obstacle.show();
   }
-  for (var p of population.fireflies) {
-    p.show(target);
-    p.update(target);
+  for (var firefly of population.fireflies) {
+    firefly.show(target);
+    firefly.update(target);
   }
 
   if (!nextGen) {
@@ -60,28 +85,16 @@ function draw() {
     newObs.show();
   }
 
+  if(newGen) {
+    setup();
+  }
+
+  // End of generation code
   if (nextGen) {
     //GA
     nextGen = false;
-    //population = new Population();
     population.evaluate(target);
 
-    if(arrived == 0) {
-      panicMode++;
-      if(panicMode % panicThreshold == 0) {
-        console.log("Panic mode! Mutation rate doubled!");
-        mutationRate *= 2;
-        panicThreshold *= 2;
-        life += 50;
-      } 
-    }
-    else {
-      panicMode = 0;
-      mutationRate = defaultMutationRate;
-      panicThreshold = defaultPanicThreshold;
-    }
-
-    console.log("Panic mode: " + panicMode + "/" + panicThreshold);
     population.selection();
     population.nextGeneration();
     arrived = 0;
@@ -92,11 +105,74 @@ function draw() {
 function createSliders() {
   // TODO: Create sliders and connect them to
   //  - mutationRate
-  //  - lifespan
+  mutationRateSlider = document.querySelector("#mutation-rate-slider");
+  mutationRateSlider.setAttribute("value", defaultMutationRate);
+  mutationRateValue = document.querySelector("#mutation-rate-value");
+  mutationRateValue.innerHTML = defaultMutationRate * 100 + "%";
+  mutationRate = defaultMutationRate;
+  
   //  - populationSize
-  //  - obstacleBonus
-  //  - crashDamage
+  populationSizeSlider = document.querySelector("#population-size-slider");
+  populationSizeSlider.setAttribute("value", defaultPopulationSize);
+  populationSizeValue = document.querySelector("#population-size-value");
+  populationSizeValue.innerHTML = defaultPopulationSize;
+  populationSize = defaultPopulationSize;
+  
+  //  - lifespan
+  lifespanSlider = document.querySelector("#life-span-slider");
+  lifespanSlider.setAttribute("value", defaultLifespan);
+  lifespanValue = document.querySelector("#life-span-value");
+  lifespanValue.innerHTML = defaultLifespan;
+  life = defaultLifespan;
+  
   //  - arriveBonus
+  arriveSlider = document.querySelector("#arrive-bonus-slider");
+  arriveSlider.setAttribute("value", defaultArriveBonus);
+  arriveValue = document.querySelector("#arrive-bonus-value");
+  arriveValue.innerHTML = defaultArriveBonus;
+  arriveBonus = defaultArriveBonus;
+
+  //  - crashDamage
+  crashSlider = document.querySelector("#crash-damage-slider");
+  crashSlider.setAttribute("value", defaultCrashDamage);
+  crashValue = document.querySelector("#crash-damage-value");
+  crashValue.innerHTML = defaultCrashDamage;
+  crashDamage = defaultCrashDamage;
+
+}
+
+function addSlidersEventListeners() {
+  mutationRateSlider.addEventListener("change", e => {
+      const value = e.target.value;
+      mutationRateValue.innerHTML = value * 100 + "%";;
+      mutationRate = value;
+  });
+
+  populationSizeSlider.addEventListener("change", e => {
+    const value = e.target.value;
+    populationSizeValue.innerHTML = value;
+    populationSize = value;
+    newGen = true;
+  });
+
+  lifespanSlider.addEventListener("change", e => {
+    const value = e.target.value;
+    lifespanValue.innerHTML = value;
+    life = value;
+    newGen = true;
+  });
+
+  arriveSlider.addEventListener("change", e => {
+    const value = e.target.value;
+    arriveValue.innerHTML = value;
+    arriveBonus = value;
+  });
+
+  crashSlider.addEventListener("change", e => {
+    const value = e.target.value;
+    crashValue.innerHTML = value;
+    crashDamage = value;
+  });
 }
 
 function showText() {
@@ -125,20 +201,37 @@ function showText() {
   textSize(20);
   text('Arrived: ' + arrived, 5, 150);
   pop();
-  text('by dshijakovski69',740,20);
+  text('Genetic algorithm demo', 700, 40);
+  textStyle("bold");
+  text('by ' + creator, 748, 62);
   pop();
 }
 
 function mousePressed() {
-  newObs = new Obstacle(mouseX, mouseY, 0, 0);
+  if(target.checkMouseOver(mouseX, mouseY)) {
+    console.log("Target Clicked");
+    repositionTarget = true;
+  }
+  else {
+    newObs = new Obstacle(mouseX, mouseY, 0, 0);
+    repositionTarget = false;
+  }
 }
 
 function mouseDragged() {
-  newObs.w = mouseX - newObs.pos.x;
-  newObs.h = mouseY - newObs.pos.y;
+  if(repositionTarget) {
+    target.x = mouseX;
+    target.y = mouseY;
+  } 
+  else if(newObs) {
+    newObs.w = mouseX - newObs.pos.x;
+    newObs.h = mouseY - newObs.pos.y;
+  }
 }
 
 function mouseReleased() {
+  repositionTarget = false;
+  if(!newObs) return;
 
   // Make sure mouse drag in any direction creates a valid obstacle
   const x = newObs.w < 0 ? newObs.pos.x + newObs.w : newObs.pos.x;
