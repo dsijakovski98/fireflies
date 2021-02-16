@@ -71,6 +71,7 @@ canvas {
   body {
     flex-direction: column-reverse;
     align-items: center;
+    justify-content: space-around;
   }
 
   canvas {
@@ -79,6 +80,7 @@ canvas {
 
   .sliders-container {
     width: 80%;
+    margin-top: 2em;
   }
 
   .sliders-title {

@@ -99,12 +99,15 @@ canvas {
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
+    -ms-flex-pack: distribute;
+        justify-content: space-around;
   }
   canvas {
     margin: 0 auto;
   }
   .sliders-container {
     width: 80%;
+    margin-top: 2em;
   }
   .sliders-title {
     text-align: center;
