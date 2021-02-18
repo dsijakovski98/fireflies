@@ -243,7 +243,7 @@ function mouseReleased() {
   obstacles.push(obs);
 
 
-  if(newObs.w > 10 && newObs.h > 3){
+  if(obs.w > 10 && obs.h > 10){
     life += obstacleLifeBonus
   }
   newObs = null;

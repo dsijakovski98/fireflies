@@ -77,14 +77,14 @@ class Firefly {
 
   calcFitness(target) {
     var d = dist(this.pos.x, this.pos.y, target.x, target.y);
-    this.fitness = (1 / (d + 1)) * (1 / (d * +1));
-    this.fitness *= life / (this.timer + 0.1);
+    this.fitness = (1 / (d + 1)) * (1 / (d + 1));
     
     if(this.crashed){
       this.fitness /= crashDamage;
     }
     
     if(this.arrived){
+      this.fitness *= life / (this.timer + 0.1);
       this.fitness *= arriveBonus;
     }
 
